@@ -1,8 +1,9 @@
 Collection of PowerShell scripts I've written/found/modified for use in job related/miscellaneous tasks.
-
-## Copy-ADGroups
+## Copy-ADGroups  
 Copy AD group membership from one user to another.  
-### Usage
+### Installation  
+Create a folder in your PowerShell modules folder and place the module in said folder. The folder and module file must have the same name.
+### Usage  
 A user can be the string representation of a distinguished name, GUID , security identifier (SID), or a SAM account name.  
 Uses the same input as "Get-ADUser".
 ```
