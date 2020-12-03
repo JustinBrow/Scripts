@@ -1,0 +1,16 @@
+# PowerShell
+Collection of PowerShell scripts I've written/found/modified for use in job related/miscellaneous tasks.
+
+## Copy-ADGroups
+Copy AD group membership from one user to another.  
+### Usage
+A user can be the string representation of a distinguished name, GUID , security identifier (SID), or a SAM account name.  
+Uses the same input as "Get-ADUser".
+```
+Copy-ADGroup -CopyFromUser sAMAccountName1 -CopyToUser sAMAccountName2
+```
+```
+Copy-ADGroup -CopyFromUser sAMAccountName1 -CopyToUser sAMAccountName2 -RemoveOld
+```
+### Reference/Inspiration  
+https://stackoverflow.com/questions/25754596/copy-group-membership-from-one-user-to-another-in-ad
