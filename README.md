@@ -1,4 +1,3 @@
-Collection of PowerShell scripts I've written/found/modified for use in job related/miscellaneous tasks.
 ## Copy-ADGroups  
 Copy AD group membership from one user to another.  
 ### Installation  
