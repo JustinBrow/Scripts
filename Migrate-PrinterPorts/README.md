@@ -13,4 +13,5 @@ Add ability to import printers to update from CSV file
 Add ability to selectitively update printers per server  
 Add ability to keep previous printer ports instead of removing them?  
 Add ability to process server simultanesouly instead of sequentially  
-Switch Write-Host to Write-Error/Verbose
+Switch Write-Host to Write-Error/Verbose  
+Check for and removed failed jobs before attempting to remove old printer port  
