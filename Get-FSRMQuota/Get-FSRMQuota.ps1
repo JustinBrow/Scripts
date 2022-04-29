@@ -2,7 +2,8 @@ $DBServer = ""
 $DB = ""
 $Servers = @( "" )
 
-ForEach ( $Server in $Servers ) {
+ForEach ( $Server in $Servers )
+{
 
 	$QuotaData = Invoke-Command -ComputerName $Server -Command { Get-FSRMQuota | `
 
@@ -19,19 +20,20 @@ ForEach ( $Server in $Servers ) {
 			      Usage
 	}
 
-	ForEach ( $i in 0 .. ( $QuotaData.Count - 1 ) ) {
+	ForEach ( $QuotaObject in $QuotaData )
+	{
 
-		$HostName	 = $QuotaData[$i].HostName
-		$PSComputerName	 = $QuotaData[$i].PSComputerName
-		$Description	 = $QuotaData[$i].Description
-		$Disabled	 = $QuotaData[$i].Disabled
-		$MatchesTemplate = $QuotaData[$i].MatchesTemplate
-		$TemplateName	 = $QuotaData[$i].TemplateName
-		$Path		 = $QuotaData[$i].Path
-		$PeakUsage	 = $QuotaData[$i].PeakUsage
-		$Size		 = $QuotaData[$i].Size
-		$SoftLimit	 = $QuotaData[$i].SoftLimit
-		$Usage		 = $QuotaData[$i].Usage
+		$HostName	 = $QuotaObject.HostName
+		$PSComputerName	 = $QuotaObject.PSComputerName
+		$Description	 = $QuotaObject.Description
+		$Disabled	 = $QuotaObject.Disabled
+		$MatchesTemplate = $QuotaObject.MatchesTemplate
+		$TemplateName	 = $QuotaObject.TemplateName
+		$Path		 = $QuotaObject.Path
+		$PeakUsage	 = $QuotaObject.PeakUsage
+		$Size		 = $QuotaObject.Size
+		$SoftLimit	 = $QuotaObject.SoftLimit
+		$Usage		 = $QuotaObject.Usage
 
 		$Query = "INSERT INTO dbo.tblQuotas (ObjectSID
 						,HostName
@@ -60,5 +62,4 @@ ForEach ( $Server in $Servers ) {
 
 		Invoke-Sqlcmd -Query $Query -ServerInstance $DBServer -Database $DB
 	}
-
 }
