@@ -4,3 +4,6 @@ Migrate-PrinterPorts - Update port for installed printers throughout enviroment.
 
 ## Batch
 ele.bat - Self-elevating batch script.
+
+## VBScript
+Fix-Mimecast - Works around an issues in our org.
