@@ -85,4 +85,3 @@ if ($FileCount -gt 0)
     $SMTP = New-Object Net.Mail.SmtpClient($SMTPServer)
     $SMTP.Send($Message)
 }
-Exit 0
