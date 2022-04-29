@@ -1,15 +1,41 @@
-$DBServer = ""
-$DB = ""
+<#
+
+.SYNOPSIS
+Compiles information about drive quotas and inserts it into SQL server.
+
+.DESCRIPTION
+The Get-FSRMQuota script loops through the servers specified in the $Servers variable
+compiling the drive quotas and then inserting the data into SQL Server.
+
+Example Server format
+@('Server1','Server2','Server3,'Server4')
+
+.NOTES
+CREATED ON: 2019-06-20
+CREATED BY: Justin Brown
+Purpose: This script exists to gather data for billing/reporting purposes.
+
+#>
+
+Set-StrictMode -Version 2.0
+
+$DBServer = "MSSQLServer"
+$DB = "DB"
 $Servers = @( "" )
+
+$BatchID = (Invoke-Sqlcmd -Query "SELECT MAX(BatchID)+1 AS NextBatchID FROM dbo.tblQuotas" -ServerInstance $DBServer -Database $DB).NextBatchID
 
 ForEach ( $Server in $Servers )
 {
 
-	$QuotaData = Invoke-Command -ComputerName $Server -Command { Get-FSRMQuota | `
+	$QuotaData = Invoke-Command -ComputerName $Server -Command `
+	{
+	
+		Get-FSRMQuota | `
 
 		Select-Object @{ Label = "HostName"; Expression = { ( Get-Item "HKLM:\SOFTWARE\Microsoft\Virtual Machine\Guest\Parameters" ).GetValue( "HostName" ).Split( "." )[0] } },
 			      PSComputerName,
-			      @{ Label = "Description"; Expression = { If ( ! ( $_.Description ) ) { Return "No description set." } Else { Return $_.Description } } },
+			      Description,
 			      Disabled,
 			      MatchesTemplate,
 			      TemplateName,
@@ -35,7 +61,8 @@ ForEach ( $Server in $Servers )
 		$SoftLimit	 = $QuotaObject.SoftLimit
 		$Usage		 = $QuotaObject.Usage
 
-		$Query = "INSERT INTO dbo.tblQuotas (ObjectSID
+		$Query = "INSERT INTO dbo.tblQuotas (BatchID
+						,ObjectSID
 						,HostName
 						,VMName
 						,Description
@@ -47,7 +74,8 @@ ForEach ( $Server in $Servers )
 						,Size
 						,SoftLimit
 						,Usage)
-			  VALUES		    (NULL
+			  VALUES		    ($BatchID
+						,NULL
 						,`'$HostName`'
 						,`'$PSComputerName`'
 						,`'$Description`'
