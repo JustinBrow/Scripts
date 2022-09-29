@@ -9,9 +9,8 @@ $Searcher.Filter = "(objectCategory=Computer)"
 $Computers = @()
 ForEach ($_ in $Searcher.FindAll())
 {
-    $Computers += $_.properties.name
+    $Computers += $_.properties.name -replace $env:COMPUTERNAME, 'localhost'
 }
-$Computers = $Computers -replace $env:COMPUTERNAME, 'localhost'
 
 $FileCount = 0
 
