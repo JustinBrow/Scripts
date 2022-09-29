@@ -9,13 +9,18 @@ $Searcher.Filter = "(objectCategory=Computer)"
 $Computers = @()
 ForEach ($_ in $Searcher.FindAll())
 {
-    $Computers += $_.properties.name -replace $env:COMPUTERNAME, 'localhost'
+    $Computers += $_.properties.name
 }
 
 $FileCount = 0
 
 ForEach ($Computer in $Computers)
 {
+    if ($Computer -eq $env:COMPUTERNAME)
+    {
+        $Computer = 'localhost'
+    }
+
     Invoke-Command -ScriptBlock `
     {
         param ($Computer)
