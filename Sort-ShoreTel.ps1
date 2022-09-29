@@ -1,6 +1,6 @@
 Start-Transcript E:\ShoreTel.log
 [Collections.ArrayList]$allVMs = (Get-ChildItem "C:\Shoreline Data\Vms\Message" -Recurse -File).Name
-"lall`r`nexit`r`n" | Out-File C:\script.txt -Encoding ascii;
+"lall`r`nexit`r`n" | Out-File C:\script.txt -Encoding ascii
 $output = & "C:\Program Files (x86)\Shoreline Communications\ShoreWare Server\Cfg.exe" -f C:\script.txt
 $mbxes = [regex]::Matches(($output | Out-String), '\d{3}').Value
 foreach ($mbx in $mbxes)
@@ -8,7 +8,7 @@ foreach ($mbx in $mbxes)
    'mbx'
    $mbx
 
-   "openm $mbx`r`nlmbox`r`nclosem`r`nexit`r`n" | Out-File C:\script.txt -Encoding ascii;
+   "openm $mbx`r`nlmbox`r`nclosem`r`nexit`r`n" | Out-File C:\script.txt -Encoding ascii
    $output = & "C:\Program Files (x86)\Shoreline Communications\ShoreWare Server\Cfg.exe" -f C:\script.txt
    if (-not ($output))
    {
