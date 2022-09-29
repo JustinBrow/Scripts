@@ -1,27 +1,22 @@
-$SMTPServer = ""
-$EmailFrom = ""
-$EmailTo = ""
-$EmailCc = ""
-
-$Computers = @()
-
-$FileCount = 0
+$SMTPServer = ''
+$EmailFrom = ''
+$EmailTo = ''
+$EmailCc = ''
 
 $Searcher = New-Object -TypeName System.DirectoryServices.DirectorySearcher
 $Searcher.Filter = "(objectCategory=Computer)"
 
+$Computers = @()
 ForEach ($_ in $Searcher.FindAll())
 {
     $Computers += $_.properties.name
 }
+$Computers = $Computers -replace $env:COMPUTERNAME, 'localhost'
+
+$FileCount = 0
 
 ForEach ($Computer in $Computers)
 {
-    if ($Computer -eq $env:COMPUTERNAME)
-    {
-        $Computer = "localhost"
-    }
-
     Invoke-Command -ScriptBlock `
     {
         param ($Computer)
@@ -65,12 +60,11 @@ ForEach ($File in $Files)
 if ($FileCount -gt 0)
 {
     $Attachment = 'Server,File,Size,LastWriteTime' + "`r`n" + $Attachment
-    $Attachment = $Attachment.ToString()
-    $Attachment = [System.Net.Mail.Attachment]::CreateAttachmentFromString($Attachment, 'PST_File_Log.csv')
+    $Attachment = [Net.Mail.Attachment]::CreateAttachmentFromString($Attachment.ToString(), 'PST_File_Log.csv')
 
     $EmailSubject = "$FileCount PST File`(s`) Found"
 
-    $Message = New-Object System.Net.Mail.MailMessage $EmailFrom, $EmailTo
+    $Message = [Net.Mail.MailMessage]::new($EmailFrom, $EmailTo)
     If ($EmailCc)
     {
         $Message.Cc.Add($EmailCc)
@@ -82,6 +76,6 @@ if ($FileCount -gt 0)
     {
         $Message.Attachments.Add($Attachment)
     }
-    $SMTP = New-Object Net.Mail.SmtpClient($SMTPServer)
+    $SMTP = [Net.Mail.SmtpClient]::new($SMTPServer)
     $SMTP.Send($Message)
 }
