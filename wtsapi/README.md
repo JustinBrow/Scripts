@@ -3,7 +3,8 @@ Reimplementation of query session/qwinsta and reset session/rwinsta.
 ### Installation  
 Create a folder in your PowerShell modules folder and place both the module file and C# code file within. The folder and module file must have the same name.  
 ### Sample Usage  
-Import the module.  
+Import the module. The first time the module is imported it will compile the C# code into a DLL.  
+If the version of the DLL and C# code are not the same the module will compile the code again.  
 ```
 Import-Module wtsapi
 ```
@@ -28,7 +29,7 @@ Returns boolean `true` if user is logged in the the computer.
 ```
 [Windows.Wtsapi32]::SessionExists($computerName, $SamAccountName)
 ```
-Any of the previous, but in a loop.
+Any of the previous, but in a loop.  
 ```
 ForEach ($computerName in $computersCollection)
 {
