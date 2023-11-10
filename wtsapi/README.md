@@ -36,3 +36,13 @@ ForEach ($computerName in $computersCollection)
    [Windows.Wtsapi32]::QuerySession($computerName, '*')
 }
 ```
+### Reference/Inspiration  
+https://github.com/jagilber/powershellScripts/blob/master/wts_querySessionInformation.ps1  
+https://github.com/jaredcatkinson/PSReflect-Functions/blob/master/Examples/Get-NetRDPSession.ps1
+https://github.com/Techsupport4me/David-Powershell/blob/master/Modules/RDS-Manager/RDS-Manager.psm1
+https://github.com/guyrleech/Microsoft/blob/master/WTSApi.ps1
+https://gist.github.com/swbbl/205694b7e1bdf09e74f25800194d5bcd
+https://stackoverflow.com/questions/42711592/getting-the-logged-in-user-in-powershell
+https://stackoverflow.com/questions/32328166/using-c-sharp-code-in-powershell-scripts-and-save-results-in-variable
+https://old.reddit.com/r/PowerShell/comments/306mcn/wtsenumeratesessions/
+https://www.lucd.info/2018/08/05/message-to-all-users-and-their-reply/
