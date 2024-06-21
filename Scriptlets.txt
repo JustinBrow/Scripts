@@ -1,0 +1,2 @@
+# enable single item recovery
+Get-Mailbox | Where-Object {$_.SingleItemRecoveryEnabled -eq $false} | Out-GridView -PassThru | ForEach-Object {Write-Host "`nSetting SingleItemRecovery for $($_.Alias)"; Set-Mailbox $_.Alias -SingleItemRecoveryEnabled $true}
