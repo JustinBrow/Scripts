@@ -21,6 +21,11 @@ Find a specific user on a single server (it's still a wildcard search internally
 [Windows.Wtsapi32]::QuerySession($computerName, $SamAccountName)
 ```
 If there are multiple users with the same username, e.g. $computerName\Administrator and $domain\Administrator  
+both will be disconnected.  
+```
+[Windows.Wtsapi32]::DisconnectSession($computerName, $SamAccountName)
+```
+If there are multiple users with the same username, e.g. $computerName\Administrator and $domain\Administrator  
 both will be logged off.  
 ```
 [Windows.Wtsapi32]::LogoffSession($computerName, $SamAccountName)
