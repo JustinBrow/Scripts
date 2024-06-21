@@ -9,3 +9,5 @@ Put-Registry -Path 'HKCU:\SOFTWARE\myOrg' -Key 'Version' -Type String -Value 2.0
 ```
 Put-Registry -Path 'HKCU:\SOFTWARE\myOrg' -Type Dword -Value 1
 ```
+### Notes  
+Only tested against PowerShell 5.1 Desktop edition on Windows 10
