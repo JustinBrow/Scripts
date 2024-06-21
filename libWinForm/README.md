@@ -10,3 +10,5 @@ MessageBox
 ```
 System.Windows.Forms.MessageBox -Text 'Hello'
 ```
+### Reference/Inspiration  
+https://stackoverflow.com/questions/11956112/non-modal-form-creation-in-powershell-function
