@@ -1,4 +1,5 @@
 ## Put-Registry  
+Rolls `New-Item`, `NewItemProperty`, and `Set-ItemProperty` into one function.
 ### Installation  
 Create a folder in your PowerShell modules folder and place the module file within. The folder and module file must have the same name.  
 ### Usage  
