@@ -17,8 +17,8 @@ function Put-Registry
    $ErrorActionPreference = 'Stop'
    
    $CMDOUT = @{
-      Verbose = If ($PSBoundParameters.Verbose -eq $true) {$true} else {$false};
-      Debug = If ($PSBoundParameters.Debug -eq $true) {$true} else {$false}
+      Verbose = if ($PSBoundParameters.ContainsKey('Verbose')) {$PsBoundParameters.Get_Item('Verbose').IsPresent} else {$false};
+      Debug = if ($PSBoundParameters.ContainsKey('Debug')) {$PsBoundParameters.Get_Item('Debug').IsPresent} else {$false}
    }
    
    Set-StrictMode -Version 3.0
