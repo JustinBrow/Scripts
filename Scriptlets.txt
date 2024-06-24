@@ -1,2 +1,100 @@
 # enable single item recovery
 Get-Mailbox | Where-Object {$_.SingleItemRecoveryEnabled -eq $false} | Out-GridView -PassThru | ForEach-Object {Write-Host "`nSetting SingleItemRecovery for $($_.Alias)"; Set-Mailbox $_.Alias -SingleItemRecoveryEnabled $true}
+
+# find delete ad objects
+Get-ADObject -Filter 'isdeleted -eq $true -and name -ne "Deleted Objects"' -IncludeDeletedObjects -Properties samaccountname,DisplayName,objectsid | Select-Object DisplayName,objectsid
+
+# flush dns
+(Get-ADDomainController -Filter *).Name | % {Invoke-Command -ComputerName $_ -ScriptBlock {ipconfig /flushdns}}
+(Get-ADComputer -Filter *).Name | % {Invoke-Command -ComputerName $_ -ScriptBlock {ipconfig /flushdns}}
+
+# out of office messages
+$user = (Read-Host "samaccoutnname"); $user = Get-ADUser $user -Properties Mail; $manager = (Read-Host "samaccoutnname"); $manager = Get-ADUser $manager -Properties Mail; $Message = "$($user.Name) is no longer with our organization.<br><br>If you need to speak to someone contact $($manager.Name) `(<a href=`"mailto:$($manager.Mail)`">$($manager.Mail)</a>`)."; Set-MailboxAutoReplyConfiguration -Identity $user.Mail -AutoReplyState Enabled -InternalMessage $Message -ExternalMessage $Message
+
+# mailbox size
+Get-ADUser -Filter "mail -like '*'" -Properties Mail | % {Get-MailboxStatistics -Identity $_.Mail | select DisplayName, @{l='TotalItemSize';e={$_.TotalItemSize.Value.ToBytes()}}}  | Sort-Object TotalItemSize -Descending
+
+# mailbox folder size
+Add-Type -LiteralPath 'C:\Program Files\Microsoft\Exchange Server\V15\Bin\Microsoft.Exchange.Data.dll'
+Get-MailboxFolderStatistics (Read-Host "samaccoutnname") | Select-Object Identity, @{Label='FolderSize'; Expression={[Microsoft.Exchange.Data.ByteQuantifiedSize]::Parse($_.FolderSize)}}, ItemsInFolder | Sort-Object FolderSize -Descending
+
+# export ntfs sddl to file
+(Get-Acl "\\$computer\c$\Program Files (x86)\Microsoft Office\root\Office16\VISIO.EXE").SDDL | Out-File 'C:\temp\Visio.txt'
+
+# set ntfs sddl from file
+Set-Acl "\\$computer\c$\Program Files (x86)\Microsoft Office\root\Office16\VISIO.EXE" -AclObject (ConvertFrom-SddlString -Sddl (Get-Content 'C:\temp\Visio.txt'))
+
+# export ntfs acl to file
+Get-Acl 'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe' | Export-Clixml 'C:\temp\MSEdge.xml'
+
+# set ntfs acl from file
+Set-Acl 'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe' -AclObject (Import-Clixml 'C:\temp\MSEdge.xml')
+
+# set printer sddl from file
+Set-Printer -Name "Adobe PDF" -PermissionSDDL (Get-Content C:\temp\AdobePDF.SDDL)
+
+# list mailbox folder permissions
+$user = (Read-Host 'User'); Get-MailboxFolderStatistics -Identity $user | % {Get-MailboxFolderPermission ($user + ':' + $_.FolderPath -replace '/', '\' -replace 'Top of Information Store', '')} | Format-Table Identity, User, AccessRights
+
+# remove user2's access to user1's folders
+$user = (Read-Host 'User'); $user2 = (Read-Host 'User2'); Get-MailboxFolderStatistics -Identity $user | % {Remove-MailboxFolderPermission -Identity ($user + ':' + $_.FolderPath -replace '/', '\' -replace 'Top of Information Store', '') -User $user2 -Confirm:$false -Verbose}
+
+# find files
+Invoke-Command -ComputerName $fileServer -ScriptBlock {[IO.Directory]::EnumerateFiles($path, "*", [IO.SearchOption]::AllDirectories)}
+
+# find folders
+Invoke-Command -ComputerName $fileServer -ScriptBlock {[IO.Directory]::EnumerateDirectories($path, "*", [IO.SearchOption]::AllDirectories)}
+
+# delete email
+Get-Mailbox | Search-Mailbox -SearchQuery "Subject:$emailSubject" -DeleteContent
+
+# move mailbox
+New-MoveRequest -TargetDatabase (Read-Host "target db") -Identity (Read-Host "samaccoutnname") -ForceOffline -Priority High
+
+# list user group memberships
+(Get-ADUser (Read-Host 'SamAccountName') -Properties MemberOf).MemberOf | % {(Get-ADGroup $_).Name}
+
+# Find phantom calendar permissions
+(Get-Mailbox).SamAccountName | ForEach {$User = $_; Get-MailboxFolderPermission ${_}:\Calendar -ErrorAction SilentlyContinue | ForEach {if (-not (Get-ADObject -LDAPFilter "(DisplayName=$($_.User.DisplayName))")) {if ($_.User.DisplayName -notin @('Default', 'Anonymous')) {[PSCustomObject]@{User = $User; Delegate = $($_.User.DisplayName)}}}}} | Format-Table -AutoSize
+# Remove phantom calendar permissions
+(Get-Mailbox).SamAccountName | ForEach {$User = $_; Get-MailboxFolderPermission ${_}:\Calendar -ErrorAction SilentlyContinue | ForEach {if (-not (Get-ADObject -LDAPFilter "(DisplayName=$($_.User.DisplayName))")) {if ($_.User.DisplayName -notin @('Default', 'Anonymous')) {Remove-MailboxFolderPermission -Identity ${User}:\Calendar -User $_.User.DisplayName -Confirm:$false}}}}
+
+# Auto map room mailbox for users
+ForEach ($user in $users)
+{
+   ForEach ($room in $rooms)
+   {
+      if ($user.msExchDelegateListBL -notcontains $room)
+      {
+         Set-ADUser $room -Add @{msExchDelegateListLink=$user.DistinguishedName} -Verbose
+      }
+   }
+}
+
+# Find foldera with access
+Get-ChildItem "\\$fileServer\$share\" -Directory -Recurse | Get-Acl | Where-Object {$_.Access.IdentityReference -contains $adgroup} | ForEach {Convert-Path $_.Path}
+
+# Find foldera without access
+Get-ChildItem "\\$fileServer\$share\" -Directory -Recurse | Get-Acl | Where-Object {$_.Access.IdentityReference -notcontains $adgroup} | ForEach {Convert-Path $_.Path}
+
+# Update SimpleDisplayNames
+Get-ADUser -Filter "mail -like '*'" | ForEach {try {Set-Mailbox -Identity $_.SamAccountName -SimpleDisplayName $_.Name -ErrorAction Stop} catch {$_}}
+
+# List expected external display name
+Get-ADUser -Properties Mail -Filter "Mail -like '*' -and ExtensionAttribute1 -eq 'usermailbox'" | ForEach {Get-Mailbox -Identity $_.samaccountname | Select-Object DisplayName, PrimarySmtpAddress, SimpleDisplayName, @{Label='Expected Result'; Expression = {if ($_.SimpleDisplayName) {$_.SimpleDisplayName} else {$_.PrimarySmtpAddress}}}} | Format-Table -AutoSize
+Get-ADUser -Properties Mail -Filter "Mail -like '*' -and ExtensionAttribute1 -eq 'sharedmailbox'" | ForEach {if (Get-ADPermission -Identity $_.DistinguishedName | Where-Object {$_.ExtendedRights.RawIdentity -eq 'Send-As' -and $_.User.RawIdentity -ne 'NT AUTHORITY\SELF' -and $_.Deny -eq $false}) {Get-Mailbox -Identity $_.samaccountname | Select-Object DisplayName, PrimarySmtpAddress, SimpleDisplayName, @{Label='Expected Result'; Expression = {if ($_.SimpleDisplayName) {$_.SimpleDisplayName} else {$_.PrimarySmtpAddress}}}}} | Format-Table -AutoSize
+
+# Show all send as
+Get-Mailbox | ForEach {Get-ADPermission -Identity $_.DistinguishedName | Where-Object {$_.ExtendedRights.RawIdentity -eq 'Send-As' -and $_.User.RawIdentity -ne 'NT AUTHORITY\SELF' -and $_.Deny -eq $false}} | Format-Table Identity, User -AutoSize
+
+# Show shared mail send as
+Get-ADUser -Properties Mail -Filter "Mail -like '*' -and ExtensionAttribute1 -eq 'sharedmailbox'" | ForEach {Get-ADPermission -Identity $_.DistinguishedName | Where-Object {$_.ExtendedRights.RawIdentity -eq 'Send-As' -and $_.User.RawIdentity -ne 'NT AUTHORITY\SELF' -and $_.Deny -eq $false}} | Format-Table Identity, User -AutoSize
+
+# Set copy message to shared mailbox sent
+Get-ADUser -Properties Mail -Filter "ExtensionAttribute1 -eq 'sharedmailbox'" | ForEach {Set-Mailbox -Identity $_.Mail  -MessageCopyForSentAsEnabled $true -MessageCopyForSendOnBehalfEnabled $true}
+
+# List print jobs in the queue
+(Get-ADComputer -Filter *).Name | % {$_; Invoke-Command -ComputerName $_ -ScriptBlock {Get-Printer | % {$_.Name; Get-PrintJob -PrinterName $_.Name}}}
+
+# Remove print jobs
+Get-Printer | % {$printer = $_.Name; $jobs = Get-PrintJob -PrinterName $printer; $jobs | % {Remove-PrintJob -PrinterName $printer -ID $_.Id}}
