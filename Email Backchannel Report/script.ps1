@@ -6,7 +6,7 @@ For example, the hacker will often configure a rule to send a copy of
 every incoming and outgoing email to another email address they control.”
 #>
 
-$CustomerOUs = (throw "Fill me in")
+$CustomerOUs = (throw 'fill me in')
 
 Connect-Exchange
 
@@ -16,7 +16,7 @@ ForEach ($CustomerOU in $CustomerOUs)
    $mailboxForwardingPreText = "<p>List of <u>administrator-created</u> Mail-server rules that forward emails to non-$CustomerOU email addresses.</p>"
    $mailboxForwarding = @($mailboxes |
       Where-Object {
-         $_.ForwardingAddress -and $_.ForwardingAddress -notmatch $CustomerOU -or $_.ForwardingSmtpAddress} |
+         ($_.ForwardingAddress -and $_.ForwardingAddress -notmatch $CustomerOU) -or $_.ForwardingSmtpAddress} |
             Select-Object @{Label = 'Mailbox'; Expression = {$_.UserPrincipalName}},
                           @{Label = 'Forwarding Destination'; Expression = {$_.ForwardingAddress}},
                           @{Label = 'Forwarding SMTP Address'; Expression = {$_.ForwardingSMTPAddress}}
@@ -33,11 +33,11 @@ ForEach ($CustomerOU in $CustomerOUs)
    $mailboxRules = @($mailboxes |
       ForEach {
          Get-InboxRule -Mailbox $_.UserPrincipalName | Where-Object {
-            $_.ForwardAsAttachmentTo.RoutingType -contains 'SMTP' -or $_.ForwardTo.RoutingType -contains 'SMTP' -or $_.RedirectTo.RoutingType -contains 'SMTP'} |
+            $_.ForwardAsAttachmentTo -match '\[SMTP:' -or $_.ForwardTo -match '\[SMTP:' -or $_.RedirectTo -match '\[SMTP:'} |
                Select-Object Name, @{Label = 'Rule'; Expression = {$_.Description}}, MailboxOwnerId,
-                             @{Label = 'ForwardAsAttachmentTo'; Expression = {[string]::Join(', ', ($_.ForwardAsAttachmentTo | ForEach {if ($_.RoutingType -eq 'SMTP') {$_.Address}}))}},
-                             @{Label = 'ForwardTo'; Expression = {[string]::Join(', ', ($_.ForwardTo | ForEach {if ($_.RoutingType -eq 'SMTP') {$_.Address}}))}},
-                             @{Label = 'RedirectTo'; Expression = {[string]::Join(', ', ($_.RedirectTo | ForEach {if ($_.RoutingType -eq 'SMTP') {$_.Address}}))}}
+                             @{Label = 'ForwardAsAttachmentTo'; Expression = {[string]::Join(', ', ($_.ForwardAsAttachmentTo | ForEach {if ($_ -match '\[SMTP:') {$_}}))}},
+                             @{Label = 'ForwardTo'; Expression = {[string]::Join(', ', ($_.ForwardTo | ForEach {if ($_ -match '\[SMTP:') {$_}}))}},
+                             @{Label = 'RedirectTo'; Expression = {[string]::Join(', ', ($_.RedirectTo | ForEach {if ($_ -match '\[SMTP:') {$_}}))}}
       }
    )
    if ($mailboxRules.Count -gt 0)
