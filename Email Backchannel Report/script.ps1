@@ -1,0 +1,81 @@
+<#
+“Frequently, the first course of action for the adversary is establishing
+a backchannel in case the user detects any suspicious activities and
+changes the email password. This is done through mail rules manipulation.
+For example, the hacker will often configure a rule to send a copy of
+every incoming and outgoing email to another email address they control.”
+#>
+
+$CustomerOUs = (throw "Fill me in")
+
+Connect-Exchange
+
+ForEach ($CustomerOU in $CustomerOUs)
+{
+   $mailboxes = Get-Mailbox -OrganizationalUnit "OU=$CustomerOU,DC=$Domain,DC=$TLD"
+   $mailboxForwardingPreText = "<p>List of <u>administrator-created</u> Mail-server rules that forward emails to non-$CustomerOU email addresses.</p>"
+   $mailboxForwarding = @($mailboxes |
+      Where-Object {
+         $_.ForwardingAddress -and $_.ForwardingAddress -notmatch $CustomerOU -or $_.ForwardingSmtpAddress} |
+            Select-Object @{Label = 'Mailbox'; Expression = {$_.UserPrincipalName}},
+                          @{Label = 'Forwarding Destination'; Expression = {$_.ForwardingAddress}},
+                          @{Label = 'Forwarding SMTP Address'; Expression = {$_.ForwardingSMTPAddress}}
+   )
+   if ($mailboxForwarding.Count -gt 0)
+   {
+      $mailboxForwarding = $mailboxForwarding | ConvertTo-Html -Fragment -PreContent $mailboxForwardingPreText | Out-String
+   }
+   else
+   {
+      $mailboxForwarding = "<p>No <u>administrator-created</u> Mail-server rules were found that forward emails to non-$CustomerOU email addresses.</p>"
+   }
+   $mailboxRulesPreText = "<p>List of <u>user-created</u> Outlook rules that forward emails to non-$CustomerOU email addresses.</p>"
+   $mailboxRules = @($mailboxes |
+      ForEach {
+         Get-InboxRule -Mailbox $_.UserPrincipalName | Where-Object {
+            $_.ForwardAsAttachmentTo.RoutingType -contains 'SMTP' -or $_.ForwardTo.RoutingType -contains 'SMTP' -or $_.RedirectTo.RoutingType -contains 'SMTP'} |
+               Select-Object Name, @{Label = 'Rule'; Expression = {$_.Description}}, MailboxOwnerId,
+                             @{Label = 'ForwardAsAttachmentTo'; Expression = {[string]::Join(', ', ($_.ForwardAsAttachmentTo | ForEach {if ($_.RoutingType -eq 'SMTP') {$_.Address}}))}},
+                             @{Label = 'ForwardTo'; Expression = {[string]::Join(', ', ($_.ForwardTo | ForEach {if ($_.RoutingType -eq 'SMTP') {$_.Address}}))}},
+                             @{Label = 'RedirectTo'; Expression = {[string]::Join(', ', ($_.RedirectTo | ForEach {if ($_.RoutingType -eq 'SMTP') {$_.Address}}))}}
+      }
+   )
+   if ($mailboxRules.Count -gt 0)
+   {
+      $mailboxRules = $mailboxRules | ConvertTo-Html -Fragment -As List -PreContent $mailboxRulesPreText | Out-String
+   }
+   else
+   {
+      $mailboxRules = "<p>No <u>user-created</u> Outlook rules were found that forward emails to non-$CustomerOU email addresses.</p>"
+   }
+   $getADGroupSplat = @{
+      Filter = 'GroupCategory -eq "Distribution"'
+      SearchBase = "OU=$CustomerOU,DC=$Domain,DC=$TLD"
+      Properties = 'Member'
+   }
+   $distributionGroupsPreText = "<p>List of <u>email distributions groups</u> and non-$CustomerOU group members</p>"
+   $distributionGroups = Get-ADGroup @getADGroupSplat
+   $distributionGroups = ForEach ($distributionGroup in $distributionGroups) {
+      $foreignUsers = ForEach ($member in $distributionGroup.Member) {
+         $name, $ou = $member -split '(?<!\\),', 2
+         if ($member -notin $mailboxes.distinguishedName)
+         {
+            $name -replace '^CN='
+         }
+      }
+      if ($foreignUsers)
+      {
+         [PSCustomObject]@{'Distribution Group Name' = $distributionGroup.SamAccountName; 'Recipient Mailbox(es)' = $foreignUsers -join ', '}
+      }
+   }
+   if ($distributionGroups.Count -gt 0)
+   {
+      $distributionGroups = $distributionGroups | ConvertTo-Html -Fragment -PreContent $distributionGroupsPreText | Out-String
+   }
+   else
+   {
+      $distributionGroups = "<p>No <u>email distributions groups</u> found with non-$CustomerOU group members</p>"
+   }
+   $body = $mailboxRules, $mailboxForwarding, $distributionGroups -join ''
+   Send-MailMessage -Body $body -BodyAsHtml -From "noreply@$Domain.$TLD" -SmtpServer "mail.$Domain.$TLD" -Subject "$CustomerOU Back channel report" -To "$Me@$Domain.$TLD"
+}
