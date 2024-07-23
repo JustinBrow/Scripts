@@ -8,7 +8,7 @@ The schedule "id" is the epoch time when the backup schedule was created by the 
 It does not appear to require being unique. I have used the same "id" for different files without issue.  
 It is not required to schedule the backup within the QuickBooks application. Just open `qbbackup.sys` in a text editor.
 
-The schedule id you pass to AutoBackupEXE must exist inside the `qbbackup.sys` xml file. Example:  
+The schedule id you pass to `AutoBackupEXE.exe` must exist inside the `qbbackup.sys` xml file. Example:  
 `C:\Program Files\Intuit\QuickBooks Enterprise Solutions 24.0\AutoBackupEXE.exe /FQ:\QuickBooks.qbw /S /I1619578348`
 ```
 <scheduled id="1619578348">
