@@ -19,7 +19,7 @@ try
 catch
 {
    $Error[0] | Out-File -LiteralPath $errorLog -Append
-   $Error.Clear()
+   exit
 }
 
 if ($qbbackup -is [Xml])
