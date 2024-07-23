@@ -1,5 +1,5 @@
 ## QuickBooks Backup / AutoBackupEXE.exe
-`QBBackup.ps1` is the culmination of all of my research into how scheduled QuickBooks backups work.
+`QBBackup.ps1` is the culmination of all of my research into how scheduled QuickBooks backups work. It's purpose is to backup all files sequentially when the scheduled task runs the script.
 
 `AutoBackupEXE.exe` looks for a file `qbbackup.sys` in a hard coded location based on the year and edition, e.g., `C:\ProgramData\Intuit\QuickBooks Enterprise Solutions 24.0\qbbackup.sys`  
 `qbbackup.sys` is a text/xml file with the file extension .sys
