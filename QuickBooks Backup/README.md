@@ -14,36 +14,36 @@ The schedule "id" you pass to `AutoBackupEXE.exe` must exist inside the `qbbacku
 ```
 <?xml version="1.0"?>
 <backupdata>
-    <file name="Q:\QuickBooks.qbw">
-        <options>
-            <NumOfClosingToBUVal>4</NumOfClosingToBUVal>
-            <NumOfClosingToBUOnOff>1</NumOfClosingToBUOnOff>
-            <AppendDateTimestampOnOff>1</AppendDateTimestampOnOff>
-            <BUExternalFiles>0</BUExternalFiles>
-            <Path>E:\Backups\</Path>
-            <TimesClossed>0</TimesClossed>
-            <UseXpCdBurn>1</UseXpCdBurn>
-            <Verify>0</Verify>
-            <LimitNumCopies>1</LimitNumCopies>
-            <NumCopies>3</NumCopies>
-            <mrcb/>
-        </options>
-        <automatic>
-            <AutoBUIsOn>0</AutoBUIsOn>
-            <AutoBUFreq>3</AutoBUFreq>
-            <TimesClossed>0</TimesClossed>
-        </automatic>
-        <sticky>
-            <Date>1614956301</Date>
-            <Path>E:\Backups\</Path>
-        </sticky>
-        <scheduled id="1619578348">
-            <NumOfBUToKeepOnOff>1</NumOfBUToKeepOnOff>
-            <NumOfBUToKeepVal>1</NumOfBUToKeepVal>
-            <SchedBUName>Backup</SchedBUName>
-            <Path>E:\Backups\</Path>
-        </scheduled>
-    </file>
+	<file name="Q:\QuickBooks.qbw">
+		<options>
+			<NumOfClosingToBUVal>4</NumOfClosingToBUVal>
+			<NumOfClosingToBUOnOff>1</NumOfClosingToBUOnOff>
+			<AppendDateTimestampOnOff>1</AppendDateTimestampOnOff>
+			<BUExternalFiles>0</BUExternalFiles>
+			<Path>E:\Backups\</Path>
+			<TimesClossed>0</TimesClossed>
+			<UseXpCdBurn>1</UseXpCdBurn>
+			<Verify>0</Verify>
+			<LimitNumCopies>1</LimitNumCopies>
+			<NumCopies>3</NumCopies>
+			<mrcb/>
+		</options>
+		<automatic>
+			<AutoBUIsOn>0</AutoBUIsOn>
+			<AutoBUFreq>3</AutoBUFreq>
+			<TimesClossed>0</TimesClossed>
+		</automatic>
+		<sticky>
+			<Date>1614956301</Date>
+			<Path>E:\Backups\</Path>
+		</sticky>
+		<scheduled id="1619578348">
+			<NumOfBUToKeepOnOff>1</NumOfBUToKeepOnOff>
+			<NumOfBUToKeepVal>1</NumOfBUToKeepVal>
+			<SchedBUName>Backup</SchedBUName>
+			<Path>E:\Backups\</Path>
+		</scheduled>
+	</file>
 </backupdata>
 
 ```
