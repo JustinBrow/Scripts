@@ -54,6 +54,7 @@ if ($qbbackup -is [Xml])
             {
                $Error[0] | Out-File -LiteralPath $errorLog -Append
                $Error.Clear()
+               continue
             }
 
             "$($file.name) finished at $($process.ExitTime.ToString($datetimeFormat)) with code $($process.ExitCode)" | Out-File -LiteralPath $logFile -Append
