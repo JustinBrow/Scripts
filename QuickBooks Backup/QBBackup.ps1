@@ -29,6 +29,7 @@ if ($qbbackup -is [Xml])
       if ($file.scheduled.Count -ge 2)
       {
          "$($file.name) has multiple backup schedules. To use this script please schedule only 1 backup" | Out-File -LiteralPath $errorLog -Append
+         continue
       }
 
       if ($file.scheduled)
