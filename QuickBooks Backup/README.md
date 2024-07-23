@@ -2,7 +2,7 @@
 `QBBackup.ps1` is the culmination of all of my research into how scheduled QuickBooks backups work.
 
 `AutoBackupEXE.exe` looks for a file `qbbackup.sys` in a hard coded location based on the year and edition, e.g., `C:\ProgramData\Intuit\QuickBooks Enterprise Solutions 24.0\qbbackup.sys`  
-qbbackup.sys is a text/xml file with the file extension .sys
+`qbbackup.sys` is a text/xml file with the file extension .sys
 
 The schedule "id" is the epoch time when the backup schedule was created by the QuickBooks application.
 It does not appear to require being unique and it is not required to schedule backup within the QuickBooks application. I have used the same "id" for different files without issue.
