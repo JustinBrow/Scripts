@@ -13,6 +13,7 @@ if (Test-Path $errorLog)
 
 try
 {
+   # Update this when the next release of QuickBooks is installed
    [Xml]$qbbackup = Get-Content 'C:\ProgramData\Intuit\QuickBooks Enterprise Solutions 24.0\qbbackup.sys'
 }
 catch
@@ -34,6 +35,7 @@ if ($qbbackup -is [Xml])
       {
          if (Test-Path $file.name)
          {
+            # Update this when the next release of QuickBooks is installed
             $params = @{
                FilePath = 'C:\Program Files\Intuit\QuickBooks Enterprise Solutions 24.0\AutoBackupEXE.exe'
                ArgumentList = "/F$($file.name) /S /I$($file.scheduled.id)"
