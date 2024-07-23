@@ -5,7 +5,7 @@ It's purpose is to backup all files sequentially when the scheduled task runs th
 `AutoBackupEXE.exe` looks for a file `qbbackup.sys` in a hard coded location based on the year and edition, e.g., `C:\ProgramData\Intuit\QuickBooks Enterprise Solutions 24.0\qbbackup.sys`  
 `qbbackup.sys` is a text/xml file with the file extension .sys
 
-The schedule "id" is the epoch time when the backup schedule was created by the QuickBooks application.
+The schedule "id" is the Unix epoch time when the backup schedule was created by the QuickBooks application.
 It does not appear to require being unique. I have used the same "id" for different files without issue.  
 It is not required to schedule the backup within the QuickBooks application. Just open `qbbackup.sys` in a text editor.
 
