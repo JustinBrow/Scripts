@@ -48,7 +48,6 @@ The schedule "id" you pass to `AutoBackupEXE.exe` must exist inside the `qbbacku
 
 ```
 
-Intuit does not provide documentation on what the exit codes mean, but I see more files exit with exit code 2 than exit code 0 so I made the assumption that exit code 2 is success.  
-Additionally, the files that exited with exit code 0 do not produce a .qbb (QuickBooks backup) file in the backup destination.
+Intuit does not provide documentation on what the exit codes mean, but files that exited with exit code 0 do not produce a .qbb (QuickBooks backup) file in the backup destination so I made the assumption that exit code 2 is success.  
 
 Running `AutoBackupEXE.exe` does not truncate the SAP SQL Anywhere (formerly Sybase SQL Anywhere) transaction .tlg file. To truncate the transaction log file you must open the .qbw file in single-user mode and perform a complete verification.
