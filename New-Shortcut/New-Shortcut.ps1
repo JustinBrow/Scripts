@@ -2,20 +2,14 @@ function New-Shortcut
 {
    param (
       [Parameter(Mandatory=$true)]
+      [ValidateScript({Test-Path -Path $_})]
       [string]$Path,
       [Parameter(Mandatory=$true)]
+      [ValidateScript({Test-Path -Path $_})]
       [string]$Target,
       [string]$Arguments
    )
-
-   if (-Not (Test-Path -Path $path))
-   {
-      throw [IO.FileNotFoundException]::new($path)
-   }
-   if (-Not (Test-Path -Path $target))
-   {
-      throw [IO.FileNotFoundException]::new($target)
-   }
+   
    if (([IO.File]::GetAttributes($target) -band [IO.FileAttributes]::Directory) -eq [IO.FileAttributes]::Directory)
    {
       $path = [IO.Path]::Combine($path, ([IO.Path]::GetFileName($target.TrimEnd('\')) + '.lnk'))
