@@ -7,19 +7,28 @@ function New-Shortcut
       [Parameter(Mandatory=$true)]
       [ValidateScript({Test-Path -Path $_})]
       [string]$Target,
+      [ValidateScript({$_.EndsWith('.lnk')})]
+      [string]$Name,
       [string]$Arguments
    )
    
-   if (([IO.File]::GetAttributes($target) -band [IO.FileAttributes]::Directory) -eq [IO.FileAttributes]::Directory)
+   if ($name)
    {
-      $path = [IO.Path]::Combine($path, ([IO.Path]::GetFileName($target.TrimEnd('\')) + '.lnk'))
+      $shortcutPath = [IO.Path]::Combine($path, $name)
    }
    else
    {
-      $path = [IO.Path]::Combine($path, ([IO.Path]::GetFileNameWithoutExtension($target) + '.lnk'))
+      if (([IO.File]::GetAttributes($target) -band [IO.FileAttributes]::Directory) -eq [IO.FileAttributes]::Directory)
+      {
+         $shortcutPath = [IO.Path]::Combine($path, ([IO.Path]::GetFileName($target.TrimEnd('\')) + '.lnk'))
+      }
+      else
+      {
+         $shortcutPath = [IO.Path]::Combine($path, ([IO.Path]::GetFileNameWithoutExtension($target) + '.lnk'))
+      }
    }
    $WshShell = New-Object -ComObject WScript.Shell
-   $shortcut = $WshShell.CreateShortcut($path)
+   $shortcut = $WshShell.CreateShortcut($shortcutPath)
    $shortcut.TargetPath = $target
    if (-not ([String]::IsNullOrEmpty($arguments)))
    {
