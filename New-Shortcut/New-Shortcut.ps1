@@ -7,7 +7,7 @@ function New-Shortcut
       [Parameter(Mandatory=$true)]
       [ValidateScript({Test-Path -Path $_})]
       [string]$Target,
-      [ValidateScript({$_.EndsWith('.lnk')})]
+      [ValidateScript({$_ -match '\.lnk$|\.url$'})]
       [string]$Name,
       [string]$Arguments
    )
