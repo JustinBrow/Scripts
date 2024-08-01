@@ -64,9 +64,9 @@ if ($DT.Rows.Count -gt 0)
    $database = 'DB'
    $table = 'tblActiveDirectoryGroups2Users'
 
-   $cn = [System.Data.SqlClient.SqlConnection]::new("Data Source=$dbserver;Integrated Security=SSPI;Initial Catalog=$database")
+   $cn = [Data.SqlClient.SqlConnection]::new("Data Source=$dbserver;Integrated Security=SSPI;Initial Catalog=$database")
    $cn.Open()
-   $bc = [System.Data.SqlClient.SqlBulkCopy]::new($cn)
+   $bc = [Data.SqlClient.SqlBulkCopy]::new($cn, [Data.SqlClient.SqlBulkCopyOptions]::TableLock)
    $bc.BatchSize = 10000
    $bc.BulkCopyTimeout = 1000
    $bc.DestinationTableName = $table
