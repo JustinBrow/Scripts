@@ -2,10 +2,10 @@ $searcher = [adsisearcher]::new()
 $searcher.PageSize = 100
 $searcher.Filter = "(objectClass=group)"
 $columns = [ordered]@{
-   UserCommonName  = @{Type = 'System.String'; Expression = 'if ($DirectoryEntry.Properties.sAMAccountName) {$DirectoryEntry.Properties.sAMAccountName[0]} else {$null}'};
-   objectSID       = @{Type = 'System.String'; Expression = 'if ($DirectoryEntry.InvokeGet("objectSID")) {[Security.Principal.SecurityIdentifier]::new($DirectoryEntry.InvokeGet("objectSID"), 0).Value} else {$null}'};
-   GroupCommonName = @{Type = 'System.String'; Expression = 'if ($group.Properties.samaccountname) {$group.Properties.samaccountname[0]} else {$null}'};
-   GroupSID        = @{Type = 'System.String'; Expression = 'if ($group.Properties.objectsid) {[Security.Principal.SecurityIdentifier]::new($group.Properties.objectsid[0], 0).Value} else {$null}'};
+   UserCommonName  = @{Type = 'System.String'};
+   objectSID       = @{Type = 'System.String'};
+   GroupCommonName = @{Type = 'System.String'};
+   GroupSID        = @{Type = 'System.String'};
 }
 
 $DT = [Data.DataTable]::new()
@@ -30,7 +30,29 @@ ForEach ($group in $groups)
       $DirectoryEntry = [adsi]::new($ldapPath)
       ForEach ($column in $columns.Keys)
       {
-         $DR.Item($column) = Invoke-Expression $columns[$column].Expression
+         switch ($column)
+         {
+            'UserCommonName'
+            {
+               $DR.Item('UserCommonName') = if ($DirectoryEntry.Properties.sAMAccountName) {$DirectoryEntry.Properties.sAMAccountName[0]} else {$null}
+               continue
+            }
+            'objectSID'
+            {
+               $DR.Item('objectSID') = if ($DirectoryEntry.InvokeGet("objectSID")) {[Security.Principal.SecurityIdentifier]::new($DirectoryEntry.InvokeGet("objectSID"), 0).Value} else {$null}
+               continue
+            }
+            'GroupCommonName'
+            {
+               $DR.Item('GroupCommonName') = if ($group.Properties.samaccountname) {$group.Properties.samaccountname[0]} else {$null}
+               continue
+            }
+            'GroupSID'
+            {
+               $DR.Item('GroupSID') = if ($group.Properties.objectsid) {[Security.Principal.SecurityIdentifier]::new($group.Properties.objectsid[0], 0).Value} else {$null}
+               continue
+            }
+         }
       }
       $DT.Rows.Add($DR)
    }
