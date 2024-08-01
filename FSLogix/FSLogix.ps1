@@ -68,6 +68,8 @@ if ($fslogixProfiles)
          {
             Write-Host 'Success!'
          }
+         # This will match the file path, registry mount, and FSLogix cookie.
+         # The cookie appears to be a hexadecimal timestamp of some kind.
          $fsl = $stdout -split '\r\n' -match '^C:\\.+?$|^FSL\.VHD\.\w{3,4}$|^\w{3,4}$'
          if ($fsl.Count -ne 3)
          {
