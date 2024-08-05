@@ -1,10 +1,8 @@
-<#
-“Frequently, the first course of action for the adversary is establishing
-a backchannel in case the user detects any suspicious activities and
-changes the email password. This is done through mail rules manipulation.
-For example, the hacker will often configure a rule to send a copy of
-every incoming and outgoing email to another email address they control.”
-#>
+$Domain = 'example'
+$TLD = 'com'
+$MailServer = "mail.$Domain.$TLD"
+$From = "noreply@$Domain.$TLD"
+$To = "me@$Domain.$TLD"
 
 $CustomerOUs = (throw 'fill me in')
 
@@ -77,5 +75,5 @@ ForEach ($CustomerOU in $CustomerOUs)
       $distributionGroups = "<p>No <u>email distributions groups</u> found with non-$CustomerOU group members</p>"
    }
    $body = $mailboxRules, $mailboxForwarding, $distributionGroups -join ''
-   Send-MailMessage -Body $body -BodyAsHtml -From "noreply@$Domain.$TLD" -SmtpServer "mail.$Domain.$TLD" -Subject "$CustomerOU Back channel report" -To "$Me@$Domain.$TLD"
+   Send-MailMessage -Body $body -BodyAsHtml -From $From -SmtpServer $MailServer -Subject "$CustomerOU Backchannel report" -To $To
 }
