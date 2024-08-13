@@ -4,6 +4,8 @@ Working with FSLogix profiles programatically
 ## FSLogix.psm1  
 Function version
 ```
+$fslogixProfiles = (Get-ChildItem -LiteralPath $profilePath -Filter '*.vhdx' -Recurse -File).FullName
+
 foreach ($fslogixProfile in $fslogixProfiles)
 {
    try
