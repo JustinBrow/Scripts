@@ -8,9 +8,9 @@ function Mount-FSLogixProfile
    param (
       [string]$FSLogixProfile,
       [ValidateScript({$_.Value.GetType() -eq [String]})]
-      [ref]$ProfilePath,
+      [ref]$ProfileMount,
       [ValidateScript({$_.Value.GetType() -eq [String]})]
-      [ref]$RegistryPath,
+      [ref]$RegistryMount,
       [ValidateScript({$_.Value.GetType() -eq [String]})]
       [ref]$FSLogixCookie
    )
@@ -72,18 +72,18 @@ function Mount-FSLogixProfile
          {
             throw [ArgumentException]::new()
          }
-         $profileMount = [Path]::Combine($fsl[0], 'Profile')
-         Write-Host ('FSLogix profile mounted to: ' + $profileMount)
-         $registryMount = [Path]::Combine('HKU:\', $fsl[1])
-         Write-Host ('Profile registry mounted to: ' + $registryMount)
-         if (-not ((Test-Path $profileMount) -and (Test-Path $registryMount)))
+         $profileMountPath = [Path]::Combine($fsl[0], 'Profile')
+         $registryMountPath = [Path]::Combine('HKU:\', $fsl[1])
+         if (-not ((Test-Path $profileMountPath) -and (Test-Path $registryMountPath)))
          {
             throw [DirectoryNotFoundException]::new()
          }
-         $ProfilePath.Value = $profileMount
-         $RegistryPath.Value = $registryMount
-         $FSLogixCookie.Value = $fsl[2]
          Write-Host 'Success!'
+         Write-Host ('FSLogix profile mounted to: ' + $profileMountPath)
+         Write-Host ('Profile registry mounted to: ' + $registryMountPath)
+         $ProfileMount.Value = $profileMountPath
+         $RegistryMount.Value = $registryMountPath
+         $FSLogixCookie.Value = $fsl[2]
          return $true
       }
    }
