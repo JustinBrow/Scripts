@@ -10,25 +10,25 @@ foreach ($fslogixProfile in $fslogixProfiles)
 {
    try
    {
-      $profilePath = $registryPath = $fslogixCookie = [string]::Empty
+      $profileMount = $registryMount = $fslogixCookie = [string]::Empty
 
       $mountParams = @{
          FSLogixProfile = $fslogixProfile
-         ProfilePath = ([ref]$profilePath)
-         RegistryPath = ([ref]$registryPath)
+         ProfileMount = ([ref]$profileMount)
+         RegistryMount = ([ref]$registryMount)
          FSLogixCookie = ([ref]$fslogixCookie)
       }
       $isProfileMounted = Mount-FSLogixProfile @mountParams
 
       if ($isProfileMounted)
       {
-         if (Test-Path $profilePath)
+         if (Test-Path $profileMount)
          {
-            Get-ChildItem $profilePath
+            Get-ChildItem $profileMount
          }
-         if (Test-Path $registryPath)
+         if (Test-Path $registryMount)
          {
-            Get-ChildItem $registryPath
+            Get-ChildItem $registryMount
          }
          Dismount-FSLogixProfile -FSLogixProfile $fslogixProfile -FSLogixCookie $fslogixCookie | Out-Null
       }
