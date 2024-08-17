@@ -10,7 +10,7 @@ foreach ($fslogixProfile in $fslogixProfiles)
 {
    try
    {
-      $profileMount = $registryMount = $fslogixCookie = [string]::Empty
+      $profileMount = $registryMount = $fslogixCookie = [String]::Empty
 
       $mountParams = @{
          FSLogixProfile = $fslogixProfile
