@@ -35,7 +35,7 @@ foreach ($fslogixProfile in $fslogixProfiles)
    }
    catch
    {
-      $_.Exception.Message
+      Write-Error $_.Exception.Message
       continue
    }
 }
