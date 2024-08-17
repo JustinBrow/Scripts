@@ -56,11 +56,11 @@ if ($fslogixProfiles)
          {
             throw $stdout
          }
-         elseif (-not [string]::IsNullOrEmpty($stderr))
+         elseif (-not [String]::IsNullOrEmpty($stderr))
          {
             throw $stderr
          }
-         elseif ([string]::IsNullOrEmpty($stdout))
+         elseif ([String]::IsNullOrEmpty($stdout))
          {
             throw
          }
@@ -116,11 +116,11 @@ if ($fslogixProfiles)
          {
             throw $stdout
          }
-         elseif (-not [string]::IsNullOrEmpty($stderr))
+         elseif (-not [String]::IsNullOrEmpty($stderr))
          {
             throw $stderr
          }
-         elseif ([string]::IsNullOrEmpty($stdout))
+         elseif ([String]::IsNullOrEmpty($stdout))
          {
             throw
          }
@@ -145,7 +145,7 @@ if ($mySuperGenericList)
    $mySuperGenericList | ConvertTo-Html -As List | Out-File C:\temp\list.html
    $mySuperGenericList | ConvertTo-Json | Out-File C:\temp\file.json
    $mySuperGenericList | ConvertTo-Json -Compress | Out-File C:\temp\file.min.json
-   $mySuperGenericList | ConvertTo-Xml -As String -NoTypeInformation | Out-File C:\temp\file.xml
+   $mySuperGenericList | ConvertTo-Xml -As string -NoTypeInformation | Out-File C:\temp\file.xml
    $mySuperGenericList | ConvertTo-Csv -NoTypeInformation | Out-File C:\temp\file.csv
    $mySuperGenericList | Out-File C:\temp\file.txt
 }
