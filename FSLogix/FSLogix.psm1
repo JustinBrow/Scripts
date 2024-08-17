@@ -6,12 +6,19 @@ function Mount-FSLogixProfile
 {
    [OutputType([Bool])]
    param (
+      [Parameter(Mandatory=$true)]
       [string]$FSLogixProfile,
-      [ValidateScript({$_.Value.GetType() -eq [String]})]
+      [Parameter(Mandatory=$true)]
+      [AllowEmptyString()]
+      [ValidateScript({$_.Value.GetType() -eq [string]})]
       [ref]$ProfileMount,
-      [ValidateScript({$_.Value.GetType() -eq [String]})]
+      [Parameter(Mandatory=$true)]
+      [AllowEmptyString()]
+      [ValidateScript({$_.Value.GetType() -eq [string]})]
       [ref]$RegistryMount,
-      [ValidateScript({$_.Value.GetType() -eq [String]})]
+      [Parameter(Mandatory=$true)]
+      [AllowEmptyString()]
+      [ValidateScript({$_.Value.GetType() -eq [string]})]
       [ref]$FSLogixCookie
    )
 
