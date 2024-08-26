@@ -16,7 +16,7 @@ Get-ADUser -Filter "mail -like '*'" -Properties Mail | % {Get-MailboxStatistics 
 
 # mailbox folder size
 Add-Type -LiteralPath 'C:\Program Files\Microsoft\Exchange Server\V15\Bin\Microsoft.Exchange.Data.dll'
-Get-MailboxFolderStatistics (Read-Host "samaccoutnname") | Select-Object Identity, @{Label='FolderSize'; Expression={[Microsoft.Exchange.Data.ByteQuantifiedSize]::Parse($_.FolderSize)}}, ItemsInFolder | Sort-Object FolderSize -Descending
+Get-MailboxFolderStatistics (Read-Host "samaccountname") | Select-Object Identity, @{Label='FolderSize'; Expression={[Microsoft.Exchange.Data.ByteQuantifiedSize]::Parse($_.FolderSize)}}, ItemsInFolder | Sort-Object FolderSize -Descending
 
 # export ntfs sddl to file
 (Get-Acl "\\$computer\c$\Program Files (x86)\Microsoft Office\root\Office16\VISIO.EXE").SDDL | Out-File 'C:\temp\Visio.txt'
