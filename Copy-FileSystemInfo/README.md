@@ -1,2 +1,2 @@
 ## Copy-FileSystemInfo
-Copies `CreationTime`, `LastWriteTime`, and `LastAccessTime` from source to target.
+Copies `CreationTime` and `LastWriteTime` from source to target.
