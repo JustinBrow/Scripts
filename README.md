@@ -1,5 +1,6 @@
 ## PowerShell
 Copy-ADGroups - Copy AD group membership from one user to another.  
+Copy-FileSystemInfo - Copies `CreationTime`, `LastWriteTime`, and `LastAccessTime` from source to target.  
 Get-FSRMQuota - Logging FSRM quotas to SQL for reporting.  
 Migrate-PrinterPorts - Update port for installed printers throughout enviroment.  
 Notify-DisabledVeeamJobs - Send an email to the help desk with a list of disabled Veeam jobs.  
