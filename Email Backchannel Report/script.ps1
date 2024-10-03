@@ -75,5 +75,5 @@ ForEach ($CustomerOU in $CustomerOUs)
       $distributionGroups = "<p>No <u>email distributions groups</u> found with non-$CustomerOU group members</p>"
    }
    $body = $mailboxRules, $mailboxForwarding, $distributionGroups -join ''
-   Send-MailMessage -Body $body -BodyAsHtml -From $From -SmtpServer $MailServer -Subject "$CustomerOU Backchannel report" -To $To
+   Send-MailMessage -Body $body -BodyAsHtml -From $From -SmtpServer $MailServer -Subject "$CustomerOU backchannel report" -To $To
 }
