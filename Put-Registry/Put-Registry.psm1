@@ -29,6 +29,18 @@ function Put-Registry
    {
       $Key = '(Default)'
    }
+
+   if ($Type -eq 'Binary' -and $Value -is [String] -and -not [String]::IsNullOrEmpty($Value))
+   {
+      try
+      {
+         [byte[]]$Value = $Value -split '(..)' -ne '' -replace '..', '0x$&'
+      }
+      catch
+      {
+         throw $_
+      }
+   }
    
    $item = $null
    $string = "Testing if path $path exists... "
