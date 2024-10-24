@@ -98,3 +98,6 @@ Get-ADUser -Properties Mail -Filter "ExtensionAttribute1 -eq 'sharedmailbox'" | 
 
 # Remove print jobs
 Get-Printer | % {$printer = $_.Name; $jobs = Get-PrintJob -PrinterName $printer; $jobs | % {Remove-PrintJob -PrinterName $printer -ID $_.Id}}
+
+# Set onedrives files to always avilable
+Get-ChildItem -Path "$env:OneDrive" -Recurse | where Attributes -ne '525344' | ForEach-Object {attrib.exe $_.FullName -U +P}
