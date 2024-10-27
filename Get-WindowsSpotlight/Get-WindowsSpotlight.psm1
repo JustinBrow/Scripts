@@ -14,7 +14,7 @@ function Get-WindowsSpotlight
       }
       else
       {
-         throw
+         throw $_
       }
    }
    else
@@ -31,7 +31,7 @@ function Get-WindowsSpotlight
       }
       catch
       {
-         throw
+         throw $_
       }
    }
    
@@ -53,7 +53,7 @@ function Get-WindowsSpotlight
                }
                catch
                {
-                  throw
+                  throw $_
                }
                continue
             }
@@ -67,7 +67,7 @@ function Get-WindowsSpotlight
                }
                catch
                {
-                  throw
+                  throw $_
                }
                continue
             }
