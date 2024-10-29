@@ -45,7 +45,14 @@ function Get-WindowsSpotlight
          {
             '^FFD8\w{4}$'
             {
-               $FileName = $File.Name + '.jpg'
+               if (-not $File.Name.EndsWith('.jpg'))
+               {
+                  $FileName = $File.Name + '.jpg'
+               }
+               else
+               {
+                  $FileName = $File.Name
+               }
                $Target = [IO.Path]::Combine($To, $FileName)
                try
                {
@@ -59,7 +66,14 @@ function Get-WindowsSpotlight
             }
             '^89504E47$'
             {
-               $FileName = $File.Name + '.png'
+               if (-not $File.Name.EndsWith('.png'))
+               {
+                  $FileName = $File.Name + '.png'
+               }
+               else
+               {
+                  $FileName = $File.Name
+               }
                $Target = [IO.Path]::Combine($To, $FileName)
                try
                {
