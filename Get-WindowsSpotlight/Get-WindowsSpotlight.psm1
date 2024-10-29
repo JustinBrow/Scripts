@@ -10,7 +10,7 @@ function Get-WindowsSpotlight
    {
       if (Test-Path -Path $Source)
       {
-         $Files = Get-ChildItem -Path $source
+         $Files = Get-ChildItem -File -Path $source
       }
       else
       {
@@ -19,7 +19,7 @@ function Get-WindowsSpotlight
    }
    else
    {
-      $Files = Get-ChildItem -Path "$env:LOCALAPPDATA\Packages\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\LocalState\Assets"
+      $Files = Get-ChildItem -File -Path "$env:LOCALAPPDATA\Packages\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\LocalState\Assets"
    }
    
    $To = [IO.Path]::Combine($Destination, 'Windows Spotlight')
