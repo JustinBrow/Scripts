@@ -29,7 +29,8 @@ If iAnswer = vbOK Then
    RecursiveFolderDelete strLocalAppData, "\Packages\Microsoft.AAD.BrokerPlugin_cw5n1h2txyewy\LocalState"
    RecursiveFolderDelete strLocalAppData, "\Packages\Microsoft.AAD.BrokerPlugin_cw5n1h2txyewy\AC\TokenBroker\Accounts"
    RecursiveFolderDelete strLocalAppData, "\Packages\Microsoft.Windows.CloudExperienceHost_cw5n1h2txyewy\AC\TokenBroker\Accounts"
-   RegCreateDWORD HKEY_CURRENT_USER, "Software\Microsoft\Office\16.0\Common\Identity", "NoDomainUser", 1
+   ' Use this when you're NOT using Entra federated identities.
+   'RegCreateDWORD HKEY_CURRENT_USER, "Software\Microsoft\Office\16.0\Common\Identity", "NoDomainUser", 1
 
    Set WshShell = Nothing
    MsgBox "Done", vbOKOnly, "Office 365 login fixer"
