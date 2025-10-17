@@ -44,6 +44,7 @@ function New-Shortcut
    }
    finally
    {
+      # I think you're supposed to do this.
       [Runtime.InteropServices.Marshal]::ReleaseComObject($shortcut) | Out-Null
       [Runtime.InteropServices.Marshal]::ReleaseComObject($WshShell) | Out-Null
       [GC]::Collect()
