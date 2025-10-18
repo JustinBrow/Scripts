@@ -4,7 +4,7 @@ Create a folder in your PowerShell modules folder and place the module file with
 ### Sample Usage  
 Import the module.  
 ```
-Import-Module wtsapi
+Import-Module libWinForm
 ```
 MessageBox
 ```
