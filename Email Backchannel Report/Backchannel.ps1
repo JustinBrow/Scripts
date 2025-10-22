@@ -13,7 +13,7 @@ ForEach ($CustomerOU in $CustomerOUs)
    $mailboxForwarding = @($mailboxes |
       Where-Object {
          ($_.ForwardingAddress -and $_.ForwardingAddress -notmatch $CustomerOU) -or $_.ForwardingSmtpAddress} |
-            Select-Object @{Label = 'Mailbox'; Expression = {$_.UserPrincipalName}},
+            Select-Object @{Label = 'Mailbox'; Expression = {$_.PrimarySmtpAddress.Address}},
                           @{Label = 'Forwarding Destination'; Expression = {$_.ForwardingAddress}},
                           @{Label = 'Forwarding SMTP Address'; Expression = {$_.ForwardingSMTPAddress}}
    )
