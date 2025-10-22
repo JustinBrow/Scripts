@@ -6,8 +6,6 @@ $To = "me@$Domain.$TLD"
 
 $CustomerOUs = (throw 'fill me in')
 
-Connect-Exchange
-
 ForEach ($CustomerOU in $CustomerOUs)
 {
    $mailboxes = Get-Mailbox -OrganizationalUnit "OU=$CustomerOU,DC=$Domain,DC=$TLD"
