@@ -19,16 +19,16 @@ Add-Type -LiteralPath 'C:\Program Files\Microsoft\Exchange Server\V15\Bin\Micros
 Get-MailboxFolderStatistics (Read-Host "samaccountname") | Select-Object Identity, @{Label='FolderSize'; Expression={[Microsoft.Exchange.Data.ByteQuantifiedSize]::Parse($_.FolderSize)}}, ItemsInFolder | Sort-Object FolderSize -Descending
 
 # export ntfs sddl to file
-(Get-Acl "\\$computer\c$\Program Files (x86)\Microsoft Office\root\Office16\VISIO.EXE").SDDL | Out-File 'C:\temp\Visio.txt'
+(Get-Acl "\\$computer\c$\Program Files (x86)\Microsoft Office\root\Office16\VISIO.EXE").SDDL | Out-File 'C:\temp\Visio.SDDL'
 
 # set ntfs sddl from file
-Set-Acl "\\$computer\c$\Program Files (x86)\Microsoft Office\root\Office16\VISIO.EXE" -AclObject (ConvertFrom-SddlString -Sddl (Get-Content 'C:\temp\Visio.txt'))
+Set-Acl "\\$computer\c$\Program Files (x86)\Microsoft Office\root\Office16\VISIO.EXE" -AclObject (ConvertFrom-SddlString -Sddl (Get-Content 'C:\temp\Visio.SDDL'))
 
 # export ntfs acl to file
-Get-Acl 'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe' | Export-Clixml 'C:\temp\MSEdge.xml'
+Get-Acl 'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe' | Export-Clixml 'C:\temp\MSEdge.ACL'
 
 # set ntfs acl from file
-Set-Acl 'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe' -AclObject (Import-Clixml 'C:\temp\MSEdge.xml')
+Set-Acl 'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe' -AclObject (Import-Clixml 'C:\temp\MSEdgeACL.ACL')
 
 # set printer sddl from file
 Set-Printer -Name "Adobe PDF" -PermissionSDDL (Get-Content C:\temp\AdobePDF.SDDL)
