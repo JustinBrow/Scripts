@@ -117,7 +117,7 @@ $DDG = Get-DynamicDistributionGroup -Identity DG_DynamicDG
 Get-Recipient -RecipientPreviewFilter $DDG.RecipientFilter
 
 # write zeroes
-try {$ZeroArray = [Byte[]]::new(65536)} catch {$ZeroArray = [Array]::CreateInstance([Byte], 65536)}; $stream = [IO.File]::Create("C:\0"); try {while ($true) {$stream.Write($ZeroArray,0,$ZeroArray.Length)}} catch {$stream.Close()} finally {[IO.File]::Delete("C:\0")}
+try {$ZeroArray = [Byte[]]::new(4096)} catch {$ZeroArray = [Array]::CreateInstance([Byte], 4096)}; $stream = [IO.File]::Create("C:\0"); try {while ($true) {$stream.Write($ZeroArray,0,$ZeroArray.Length)}} catch {$stream.Close()} finally {[IO.File]::Delete("C:\0")}
 
 # delete admin profiles
 $PSSessionOption = New-PSSessionOption -NoMachineProfile; Get-ADComputer -Filter * | % {$PSSession = New-PSSession -ComputerName $_ -SessionOption $PSSessionOption; Invoke-Command -Session $PSSession -ScriptBlock {& "C:\temp\delprof2.exe" /u /id:admin*}}
@@ -128,3 +128,6 @@ Get-Mailbox -RecipientTypeDetails SharedMailbox | where AuditEnabled -ne $true |
 
 # audit send as
 Get-Mailbox -RecipientTypeDetails SharedMailbox | % {Search-MailboxAuditLog -Identity $_.Alias -Operations SendAs -ShowDetails | select MailboxResolvedOwnerName, MailboxOwnerUPN, LastAccessed, ItemSubject}
+
+# folder size
+(Get-ChildItem $path -Recurse -File | Measure-Object -Property Length -Sum).Sum / 1GB
