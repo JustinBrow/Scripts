@@ -36,7 +36,7 @@ Set-Printer -Name "Adobe PDF" -PermissionSDDL (Get-Content C:\temp\AdobePDF.SDDL
 # list mailbox folder permissions
 $user = (Read-Host 'User'); Get-MailboxFolderStatistics -Identity $user | % {Get-MailboxFolderPermission ($user + ':' + $_.FolderPath -replace '/', '\' -replace 'Top of Information Store', '')} | Format-Table Identity, User, AccessRights
 
-# remove user2's access to user1's folders
+# remove user2's access to user1's mailbox folders
 $user = (Read-Host 'User'); $user2 = (Read-Host 'User2'); Get-MailboxFolderStatistics -Identity $user | % {Remove-MailboxFolderPermission -Identity ($user + ':' + $_.FolderPath -replace '/', '\' -replace 'Top of Information Store', '') -User $user2 -Confirm:$false -Verbose}
 
 # find files
