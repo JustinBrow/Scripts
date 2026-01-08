@@ -120,8 +120,8 @@ Get-Recipient -RecipientPreviewFilter $DDG.RecipientFilter
 try {$ZeroArray = [Byte[]]::new(4096)} catch {$ZeroArray = [Array]::CreateInstance([Byte], 4096)}; $stream = [IO.File]::Create("C:\0"); try {while ($true) {$stream.Write($ZeroArray,0,$ZeroArray.Length)}} catch {$stream.Close()} finally {[IO.File]::Delete("C:\0")}
 
 # delete admin profiles
-$PSSessionOption = New-PSSessionOption -NoMachineProfile; Get-ADComputer -Filter * | % {$PSSession = New-PSSession -ComputerName $_ -SessionOption $PSSessionOption; Invoke-Command -Session $PSSession -ScriptBlock {& "C:\temp\delprof2.exe" /u /id:admin*}}
-Get-ADComputer -Filter * | % {Invoke-Command -ComputerName $_ -ScriptBlock {Get-CimInstance -ClassName Win32_UserProfile | where LocalPath -like 'C:\Users\Admin*' | Remove-CimInstance}}
+$PSSessionOption = New-PSSessionOption -NoMachineProfile; Get-ADComputer -Filter * | % {$PSSession = New-PSSession -ComputerName $_ -SessionOption $PSSessionOption; Invoke-Command -Session $PSSession -ScriptBlock {& "C:\temp\delprof2.exe" /u /id:admin*}; Remove-PSSession -Session $PSSession}
+$PSSessionOption = New-PSSessionOption -NoMachineProfile; Get-ADComputer -Filter * | % {$PSSession = New-PSSession -ComputerName $_.Name -SessionOption $PSSessionOption; Invoke-Command -Session $PSSession -ScriptBlock {Get-CimInstance -ClassName Win32_UserProfile | where LocalPath -like 'C:\Users\Admin*' | Remove-CimInstance}; Remove-PSSession -Session $PSSession}
 
 # enable mailbox auditing
 Get-Mailbox -RecipientTypeDetails SharedMailbox | where AuditEnabled -ne $true | Set-Mailbox -AuditEnabled $true
