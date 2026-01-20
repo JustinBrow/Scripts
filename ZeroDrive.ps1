@@ -1,0 +1,1 @@
+try {$ZeroArray = [Byte[]]::new(65536)} catch {$ZeroArray = [Array]::CreateInstance([Byte], 65536)}; $stream = [IO.File]::Create('C:\0'); try {while ($true) {$stream.Write($ZeroArray,0,$ZeroArray.Length)}} catch {$stream.Close()} finally {[IO.File]::Delete('C:\0')}
