@@ -131,3 +131,15 @@ Get-Mailbox -RecipientTypeDetails SharedMailbox | % {Search-MailboxAuditLog -Ide
 
 # folder size
 (Get-ChildItem $path -Recurse -File | Measure-Object -Property Length -Sum).Sum / 1GB
+
+# Last Login
+$SamAccountName = (Read-Host 'SamAccountName')
+$DCs = (Get-ADDomainController -Filter *).Name
+foreach ($DC in $DCs) {Get-ADUser -Identity $SamAccountName -Properties LastLogon, LastLogonTimestamp -Server $DC | select Name, @{Label = 'LastLogon'; Expression = {[datetime]::FromFileTime($_.LastLogon)}}, @{Label = 'LastLogonTimestamp'; Expression = {[datetime]::FromFileTime($_.LastLogonTimestamp)}}, @{Label = 'Server'; Expression = {$DC}}}
+
+# list mailboxes in database
+Get-Mailbox -Database mbdb01
+Get-Mailbox -Database mbdb01 -Archive
+Get-Mailbox -Database mbdb01 -PublicFolder
+Get-Mailbox -Database mbdb01 -Arbitration
+Get-Mailbox -Database mbdb01 -AuditLog
