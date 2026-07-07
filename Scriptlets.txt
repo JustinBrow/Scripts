@@ -9,7 +9,7 @@ Get-ADObject -Filter 'isdeleted -eq $true -and name -ne "Deleted Objects"' -Incl
 (Get-ADComputer -Filter *).Name | % {Invoke-Command -ComputerName $_ -ScriptBlock {ipconfig /flushdns}}
 
 # out of office messages
-$user = (Read-Host "samaccoutnname"); $user = Get-ADUser $user -Properties Mail; $manager = (Read-Host "samaccoutnname"); $manager = Get-ADUser $manager -Properties Mail; $Message = "$($user.Name) is no longer with our organization.<br><br>If you need to speak to someone contact $($manager.Name) `(<a href=`"mailto:$($manager.Mail)`">$($manager.Mail)</a>`)."; Set-MailboxAutoReplyConfiguration -Identity $user.Mail -AutoReplyState Enabled -InternalMessage $Message -ExternalMessage $Message
+$user = Get-ADUser (Read-Host "samaccountname") -Properties Mail, Manager; $manager = Get-ADUser -Identity $user.Manager -Properties Mail; $Message = "$($user.Name) is no longer with our organization.<br><br>If you need to speak to someone contact $($manager.Name) `(<a href=`"mailto:$($manager.Mail)`">$($manager.Mail)</a>`)."; Set-MailboxAutoReplyConfiguration -Identity $user.Mail -AutoReplyState Enabled -InternalMessage $Message -ExternalMessage $Message -ExternalAudience All
 
 # mailbox size
 Get-ADUser -Filter "mail -like '*'" -Properties Mail | % {Get-MailboxStatistics -Identity $_.Mail | select DisplayName, @{l='TotalItemSize';e={$_.TotalItemSize.Value.ToBytes()}}}  | Sort-Object TotalItemSize -Descending
