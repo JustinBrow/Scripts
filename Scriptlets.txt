@@ -1,6 +1,9 @@
 # enable single item recovery
 Get-Mailbox | Where-Object {$_.SingleItemRecoveryEnabled -eq $false} | Out-GridView -PassThru | ForEach-Object {Write-Host "`nSetting SingleItemRecovery for $($_.Alias)"; Set-Mailbox $_.Alias -SingleItemRecoveryEnabled $true}
 
+# clear user recycle bin
+Get-ChildItem 'E:\Home\*' -Recurse -Force | Where-Object Name -EQ '$RECYCLE.BIN' | Get-ChildItem | Where-Object {$_.LastWriteTime -LT (Get-Date).AddYears(-2) -and $_.Name -NE 'desktop.ini'} | % {Remove-Item -LiteralPath $_.FullName -Recurse -Force}
+
 # find delete ad objects
 Get-ADObject -Filter 'isdeleted -eq $true -and name -ne "Deleted Objects"' -IncludeDeletedObjects -Properties samaccountname,DisplayName,objectsid | Select-Object DisplayName,objectsid
 
