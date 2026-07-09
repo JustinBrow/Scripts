@@ -13,7 +13,7 @@ ForEach ($CustomerOU in $CustomerOUs)
    $mailboxForwarding = @($mailboxes |
       Where-Object {
          $PSItem.ForwardingAddress -or $PSItem.ForwardingSmtpAddress} |
-            Select-Object @{Label = 'Mailbox'; Expression = {$PSItem.PrimarySmtpAddress.Address}},
+            Select-Object @{Label = 'Mailbox'; Expression = {$PSItem.PrimarySmtpAddress}},
                           @{Label = 'Forwarding Destination'; Expression = {$PSItem.ForwardingAddress}},
                           @{Label = 'Forwarding SMTP Address'; Expression = {$PSItem.ForwardingSMTPAddress}}
    )
@@ -32,9 +32,9 @@ ForEach ($CustomerOU in $CustomerOUs)
             Where-Object {
                $PSItem.ForwardAsAttachmentTo -or $PSItem.ForwardTo -or $PSItem.RedirectTo} |
                   Select-Object Name, @{Label = 'Rule'; Expression = {$PSItem.Description}}, MailboxOwnerId,
-                                @{Label = 'ForwardAsAttachmentTo'; Expression = {[string]::Join(', ', $PSItem.ForwardAsAttachmentTo)}},
-                                @{Label = 'ForwardTo'; Expression = {[string]::Join(', ', $PSItem.ForwardTo)}},
-                                @{Label = 'RedirectTo'; Expression = {[string]::Join(', ', $PSItem.RedirectTo)}}
+                                @{Label = 'ForwardAsAttachmentTo'; Expression = {[string]::Join(', ', ($PSItem.ForwardAsAttachmentTo | ForEach {if ($_ -match '\[EX:') {($_ -split '"')[1]} else {$_}}))}},
+                                @{Label = 'ForwardTo'; Expression = {[string]::Join(', ', ($PSItem.ForwardTo | ForEach {if ($_ -match '\[EX:') {($_ -split '"')[1]} else {$_}}))}},
+                                @{Label = 'RedirectTo'; Expression = {[string]::Join(', ', ($PSItem.RedirectTo | ForEach {if ($_ -match '\[EX:') {($_ -split '"')[1]} else {$_}}))}}
       }
    )
    if ($mailboxRules.Count -gt 0)
