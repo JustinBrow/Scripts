@@ -165,6 +165,6 @@ Get-Mailbox -ResultSize Unlimited |
       Get-MobileDeviceStatistics -Mailbox $_.UserPrincipalName |
          Where-Object {$_.LastSyncAttemptTime -and $_.LastSyncAttemptTime -lt $dateCutoff} |
             ForEach-Object {
-               Get-MobileDevice -Identity $_.Guid.Guid | Remove-MobileDevice
+               Get-MobileDevice -Identity $_.Guid.Guid | Remove-MobileDevice -Confirm:$false
             }
    }
