@@ -145,3 +145,26 @@ Get-Mailbox -Database mbdb01 -Archive
 Get-Mailbox -Database mbdb01 -PublicFolder
 Get-Mailbox -Database mbdb01 -Arbitration
 Get-Mailbox -Database mbdb01 -AuditLog
+
+# list stale mobile devices
+$dateCutoff = (Get-Date).AddDays(-60)
+Get-Mailbox -ResultSize Unlimited |
+   ForEach-Object {
+      Get-MobileDeviceStatistics -Mailbox $_.UserPrincipalName |
+         Where-Object {$_.LastSyncAttemptTime -and $_.LastSyncAttemptTime -lt $dateCutoff} |
+            ForEach-Object {
+               $LastSyncAttemptTime = $_.LastSyncAttemptTime
+               Get-MobileDevice -Identity $_.Guid.Guid | Select-Object @{Label='LastSyncAttemptTime'; Expression = {$LastSyncAttemptTime}}, FriendlyName, Id
+            }
+   }
+
+# remove stale mobile devices
+$dateCutoff = (Get-Date).AddDays(-60)
+Get-Mailbox -ResultSize Unlimited |
+   ForEach-Object {
+      Get-MobileDeviceStatistics -Mailbox $_.UserPrincipalName |
+         Where-Object {$_.LastSyncAttemptTime -and $_.LastSyncAttemptTime -lt $dateCutoff} |
+            ForEach-Object {
+               Get-MobileDevice -Identity $_.Guid.Guid | Remove-MobileDevice
+            }
+   }
