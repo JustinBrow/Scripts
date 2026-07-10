@@ -175,3 +175,6 @@ Get-MailboxPermission -ResultSize Unlimited -Identity * | where {$_.Identity.Par
 
 # list mailbox send as
 Get-Mailbox -ResultSize Unlimited | % {Get-ADPermission -Identity $_.DistinguishedName | where {$_.ExtendedRights.RawIdentity -eq 'Send-As' -and $_.User.RawIdentity -ne 'NT AUTHORITY\SELF'}} | sort Identity | ft Identity, User, ExtendedRights -AutoSize
+
+# list mailbox send on behalf
+Get-Mailbox -ResultSize Unlimited -Identity * | where GrantSendOnBehalfTo | sort Identity | ft Identity, GrantSendOnBehalfTo -AutoSize
