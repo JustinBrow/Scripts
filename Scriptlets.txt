@@ -168,3 +168,6 @@ Get-Mailbox -ResultSize Unlimited |
                Get-MobileDevice -Identity $_.Guid.Guid | Remove-MobileDevice -Confirm:$false
             }
    }
+
+# list mailbox full access
+Get-MailboxPermission -ResultSize Unlimited -Identity * | where {$_.User.RawIdentity -ne 'NT AUTHORITY\SELF' -and $_.IsInherited -eq $false -and $_.Deny -eq $false} | select Identity, User, AccessRights
