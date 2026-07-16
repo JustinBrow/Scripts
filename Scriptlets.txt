@@ -178,3 +178,25 @@ Get-Mailbox -ResultSize Unlimited | % {Get-ADPermission -Identity $_.Distinguish
 
 # list mailbox send on behalf
 Get-Mailbox -ResultSize Unlimited -Identity * | where GrantSendOnBehalfTo | sort Identity | ft Identity, GrantSendOnBehalfTo -AutoSize
+
+# remove phantom mailbox folder permissions
+$mailboxes = Get-Mailbox
+foreach ($mailbox in $mailboxes)
+{
+   $folders = Get-MailboxFolderStatistics -Identity $mailbox.UserPrincipalName
+   foreach ($folder in $folders)
+   {
+      if ($folder.FolderPath -in @('/Audits', '/Recoverable Items', '/Calendar Logging', '/Deletions', '/Purges', '/Versions')) {continue};
+      Get-MailboxFolderPermission ($mailbox.UserPrincipalName + ':' + $folder.FolderPath -replace '/', '\' -replace 'Top of Information Store', '') |
+         foreach {
+            if ($_.User -notin @('Default', 'Anonymous'))
+            {
+               if ($_.User.UserType -eq 'Unknown')
+               {
+                  [string]::Format('Removing {0} from {1}', $_.User.DisplayName, ($mailbox.UserPrincipalName + ':' + $folder.FolderPath -replace '/', '\' -replace 'Top of Information Store', ''))
+                  Remove-MailboxFolderPermission -Identity ($mailbox.UserPrincipalName + ':' + $folder.FolderPath -replace '/', '\' -replace 'Top of Information Store', '') -User $_.User.DisplayName -Confirm:$false
+               }
+            }
+         }
+   }
+}
