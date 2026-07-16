@@ -179,6 +179,37 @@ Get-Mailbox -ResultSize Unlimited | % {Get-ADPermission -Identity $_.Distinguish
 # list mailbox send on behalf
 Get-Mailbox -ResultSize Unlimited -Identity * | where GrantSendOnBehalfTo | sort Identity | ft Identity, GrantSendOnBehalfTo -AutoSize
 
+# DistributionGroup Restriction
+Get-DistributionGroup | sort Identity | select Identity, MemberJoinRestriction, MemberDepartRestriction
+
+# list all mailbox folder permissions
+Get-Mailbox | % {$User = $_.UserPrincipalName; Get-MailboxFolderStatistics -Identity $User | % {Get-MailboxFolderPermission ($User + ':' + $_.FolderPath -replace '/', '\' -replace 'Top of Information Store', '') | select Identity, User, AccessRights}}
+
+# list top level mailbox folder permissions
+$mailboxes = Get-Mailbox
+$perms = [Collections.ArrayList]::new()
+foreach ($mailbox in $mailboxes)
+{
+   $folders = Get-MailboxFolderStatistics -Identity $mailbox.UserPrincipalName
+   foreach ($folder in $folders)
+   {
+      if (($folder.FolderPath.Split('/').Length - 1) -ge 2) {continue};
+      if ($folder.FolderPath -in @('/Audits', '/Recoverable Items', '/Calendar Logging', '/Deletions', '/Purges', '/Versions')) {continue};
+      Get-MailboxFolderPermission ($mailbox.UserPrincipalName + ':' + $folder.FolderPath -replace '/', '\' -replace 'Top of Information Store', '') |
+         foreach {
+            if ($_.User -notin @('Default', 'Anonymous'))
+            {
+               [void]$perms.Add([PSCustomObject]@{
+                  Identity     = $_.Identity
+                  User         = $_.User
+                  AccessRights = $_.AccessRights
+               })
+            }
+         }
+   }
+}
+$perms | Format-Table Identity, User, AccessRights -AutoSize
+
 # remove phantom mailbox folder permissions
 $mailboxes = Get-Mailbox
 foreach ($mailbox in $mailboxes)
