@@ -231,3 +231,48 @@ foreach ($mailbox in $mailboxes)
          }
    }
 }
+
+# mirror local permissions to cloud
+$excludedFolders = @('/Audits', '/Recoverable Items', '/Calendar Logging', '/Deletions',
+'/SubstrateHolds', '/Purges', '/Versions', '/Contacts/{06967759-274D-40B2-A3EB-D7F9E73727D7}'
+'/Contacts/{A9E2BC46-B3A0-4243-B315-60D991004455}', '/Contacts/Companies', '/Contacts/GAL Contacts'
+'/Contacts/Organizational Contacts', '/Contacts/PeopleCentricConversation Buddies', '/Contacts/Recipient Cache'
+'/Conversation History', '/Conversation History/Team Chat', '/ExternalContacts', '/Files', '/Journal'
+'/Yammer Root', '/Yammer Root/Feeds', '/Yammer Root/Inbound', '/Yammer Root/Outbound')
+Connect-ExchangeOnline
+$Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://mail.example.com/PowerShell/ -Authentication Kerberos
+$mailboxes = Get-Mailbox
+foreach ($mailbox in $mailboxes)
+{
+   $folders = Get-MailboxFolderStatistics -Identity $mailbox.Alias
+   foreach ($folder in $folders)
+   {
+      if ($folder.FolderPath -in $excludedFolders) {continue}
+      $folderPath = $mailbox.Alias + ':' + $folder.FolderPath.Replace('/','\').Replace([char]63743,'/').Replace('Top of Information Store', '')
+      try
+      {
+         $cloudPermissions = Get-MailboxFolderPermission $folderPath
+         $localPermissions = Invoke-Command -Session $Session -ScriptBlock {Get-MailboxFolderPermission $Using:folderPath -ErrorAction Stop} -ErrorAction Stop
+         foreach ($localPermission in $localPermissions)
+         {
+            $cloudPermission = $cloudPermissions.Where({$_.User.DisplayName -eq $localPermission.User.DisplayName})
+            if ($cloudPermission -and ($cloudPermission.AccessRights -ne $localPermission.AccessRights))
+            {
+               [string]::Format('Changing {0} to {1} on {2} for {3}', $cloudPermission.AccessRights, ($localPermission.AccessRights -join ','), $folderPath, $localPermission.User.DisplayName)
+               Set-MailboxFolderPermission -Identity $folderPath -User $localPermission.User.DisplayName -AccessRights $localPermission.AccessRights
+            }
+            elseif (-not $cloudPermission)
+            {
+               [string]::Format('Adding {0} to {1} for {2}', ($localPermission.AccessRights -join ','), $folderPath, $localPermission.User.DisplayName)
+               Add-MailboxFolderPermission -Identity $folderPath -User $localPermission.User.DisplayName -AccessRights $localPermission.AccessRights
+            }
+         }
+      }
+      catch
+      {
+         $_.Error.Message
+         continue
+      }
+   }
+}
+Disconnect-ExchangeOnline -Confirm:$false
