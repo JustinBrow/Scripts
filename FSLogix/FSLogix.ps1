@@ -42,7 +42,7 @@ if ($fslogixProfiles)
          [string]$stderr = $proc.StandardOutput.ReadToEnd()
          if ($stdout -eq 'Invalid Syntax')
          {
-            throw [ArgumentException]::new()
+            throw [ArgumentException]::new($procinfo.Arguments)
          }
          if ($stdout -like 'Error*0x00000522*')
          {
