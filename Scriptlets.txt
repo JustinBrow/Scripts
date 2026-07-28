@@ -340,3 +340,6 @@ foreach ($mailbox in $mailboxes)
    }
 }
 Disconnect-ExchangeOnline -Confirm:$false
+
+# OST file size
+(Get-ADGroupMember TS_Farm).Name | % {Get-Item "\\$_\C$\Users\*\AppData\Local\Microsoft\Outlook\*.ost"} | sort Length | select Name, Length
