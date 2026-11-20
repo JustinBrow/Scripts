@@ -30,11 +30,8 @@ function Send-MailMessage2
       [string]$From,
       [Parameter(Mandatory=$True)]
       [string]$To,
-      [string]$Cc,
-      [string]$Bcc,
       [string]$Subject,
       [string]$Body,
-      [string]$Attachments,
       [bool]$BodyAsHtml = $False,
       [Parameter(Mandatory=$True)]
       [string]$SmtpServer,
@@ -47,20 +44,7 @@ function Send-MailMessage2
    $Message = [Net.Mail.MailMessage]::new($From, $To)
    $Message.Subject = $Subject
    $Message.Body = $Body
-   if ($Cc)
-   {
-      $Message.Cc.Add($Cc)
-   }
-   if ($Bcc)
-   {
-      $Message.Bcc.Add($Bcc)
-   }
    $Message.IsBodyHTML = $BodyAsHtml
-   if ($Attachments)
-   {
-      $Attachment = [Net.Mail.Attachment]::new($Attachments, [Net.Mime.MediaTypeNames+Text]::Plain)
-      $Message.Attachments.Add($Attachment)
-   }
    $SMTP = [Net.Mail.SmtpClient]::new($SmtpServer)
    if (-not $UseDefaultCredentials)
    {
@@ -76,13 +60,6 @@ function Send-MailMessage2
    catch
    {
       throw $_.Exception.Message
-   }
-   finally
-   {
-      if ($Attachment)
-      {
-         $Attachment.Dispose()
-      }
    }
 }
 
